@@ -1,74 +1,69 @@
-(function (){
-    const header = document.querySelector('.header');
-    window.onscroll = () => {
-        if (window.pageYOffset >50) {
-            header.classList.add('header_active');
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+        if (entry.isIntersecting) {            
+            document.querySelectorAll('.js-scroll').forEach((link) => {
+              link.classList.toggle('js-scroll-active',
+                   link.getAttribute('href').replace('#','') === entry.target.id
+                   ); 
+            });
         }
-        else { 
-           header.classList.remove('header_active');
-   
-        }
-    };
-   }());
+    });
+},{
+            threshold: 0.7,
+    });
+    
+
+document.querySelectorAll('.js-section').forEach((section) => 
+    observer.observe(section),
+);
+
 //Burger handler
-(function () {
-    const burgerItem = document.querySelector('.burger');
-    const menu = document.querySelector('.header__nav');
-    const menuCloseItem = document.querySelector('.header__nav-close');
-    const menuLinks = document.querySelectorAll('.header__link');
-    
-    burgerItem.addEventListener('click', () => {
-        menu.classList.add('header__nav_active');
-    });
-    menuCloseItem.addEventListener('click', () => {
-        menu.classList.remove('header__nav_active');
-    });
-    if (window.innerWidth <= 375) {
+
+const burgerItem = document.querySelector('.js-burger');
+const menu = document.querySelector('.js-header__nav');
+const menuCloseItem = document.querySelector('.js-header__nav-close');
+const menuLinks = document.querySelectorAll('.js-header__link');
+
+burgerItem.addEventListener('click', () => {
+    menu.classList.add('js-header__nav_active');
+});
+menuCloseItem.addEventListener('click', () => {
+    menu.classList.remove('js-header__nav_active');
+});
+if (window.innerWidth <= 375) {
+    menuLinks.forEach(function (value, i) {
+        menuLinks[i].addEventListener('click', () => {
+            menu.classList.remove('js-header__nav_active');
+        })
         
-        for (let i = 0; i < menuLinks.length; i += 1) {
-            menuLinks[i].addEventListener('click', () => {
-                menu.classList.remove('header__nav_active');
-            });
-        }
-    }
+    });
+}
 
-}());
+
+
 // Scroll to anchors
-(function () {
 
-    const smoothScroll = function (targetEl, duration) {
-        const headerElHeight =  document.querySelector('.header').clientHeight;
-        let target = document.querySelector(targetEl);
-        let targetPosition = target.getBoundingClientRect().top - headerElHeight;
-        let startPosition = window.pageYOffset;
-        let startTime = null;
-    
-        const ease = function(t,b,c,d) {
-            t /= d / 2;
-            if (t < 1) return c / 2 * t * t + b;
-            t--;
-            return -c / 2 * (t * (t - 2) - 1) + b;
-        };
-    
-        const animation = function(currentTime){
-            if (startTime === null) startTime = currentTime;
-            const timeElapsed = currentTime - startTime;
-            const run = ease(timeElapsed, startPosition, targetPosition, duration);
-            window.scrollTo(0,run);
-            if (timeElapsed < duration) requestAnimationFrame(animation);
-        };
-        requestAnimationFrame(animation);
 
-    };
 
-    const scrollTo = function () {
-        const links = document.querySelectorAll('.js-scroll');
-        links.forEach(each => {
-            each.addEventListener('click', function () {
-                const currentTarget = this.getAttribute('href');
-                smoothScroll(currentTarget, 1000);
-            });
+const smoothLinks = document.querySelectorAll('a[href^="#"]');
+for (let smoothLink of smoothLinks) {
+    smoothLink.addEventListener('click', function (e) {
+        e.preventDefault();
+        const id = smoothLink.getAttribute('href');
+
+        document.querySelector(id).scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
         });
-    };
-    scrollTo();
-}());
+    });
+};
+const scrollTo = function () {
+    const links = document.querySelectorAll('.js-scroll');
+    links.forEach(each => {
+        each.addEventListener('click', function () {
+            const currentTarget = this.getAttribute('href');
+            smoothScroll(currentTarget, 1000);
+        });
+    });
+};
+scrollTo();
